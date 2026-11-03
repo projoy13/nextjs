@@ -4,6 +4,7 @@
 
 import { getAllGear } from "@/app/service/gear.service"
 import GearCard from "../_components/GearCard"
+import Link from "next/link"
 
  interface IGear {
     id: string
@@ -45,11 +46,30 @@ const GearPage = async () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
         {gears.map((gear) => (
-          <GearCard
-            key={gear.id}
-            gear={gear}
-          />
-        ))}
+    <Link
+        href={`/Gears/${gear.id}`}
+        key={gear.id}
+        className="block"
+    >
+        <div className="border rounded-xl p-4 hover:shadow-lg transition cursor-pointer">
+
+            <h2 className="text-xl font-bold">
+                {gear.name}
+            </h2>
+
+            <p>{gear.description}</p>
+
+            <p>
+                Price: ${gear.pricePerDay} / day
+            </p>
+
+            <p className="text-blue-600 mt-3">
+                View Details →
+            </p>
+
+        </div>
+    </Link>
+))}
 
       </div>
 
