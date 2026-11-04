@@ -25,6 +25,8 @@ export async function proxy(request: NextRequest) {
             process.env.JWT_ACCESS_SECRET as string
         )
         : null;
+        console.log("access verify:", decodedAccessToken);
+    console.log("secret defined:", !!process.env.JWT_ACCESS_SECRET);
 
     // Verify the refresh token using the refresh token secret
     const decodedRefreshToken = refreshToken
@@ -59,19 +61,26 @@ export async function proxy(request: NextRequest) {
 
     // If an access token exists but is invalid, redirect to login
     if (accessToken && !decodedAccessToken?.success) {
-        const errorResponse = NextResponse.redirect(
-            new URL("/login", request.url)
-        );
+    const isOnAuthPage = pathname === "/login" || pathname === "/register";
 
-        // Remove invalid tokens from cookies
-        errorResponse.cookies.delete("accessToken");
-        errorResponse.cookies.delete("refreshToken");
-
-        return errorResponse;
+    // Already on login/register: clear bad cookies and show the page (no redirect)
+    if (isOnAuthPage) {
+        const res = NextResponse.next();
+        res.cookies.delete("accessToken");
+        res.cookies.delete("refreshToken");
+        return res;
     }
 
+    const errorResponse = NextResponse.redirect(
+        new URL("/login", request.url)
+    );
+    errorResponse.cookies.delete("accessToken");
+    errorResponse.cookies.delete("refreshToken");
+    return errorResponse;
+}
+
     // Get the user's role from the decoded access token
-    if (decodedAccessToken?.success && decodedAccessToken.data) {
+    if (decodedAccessToken?.success && decodedRefreshToken?.data) {
         userRole = (decodedAccessToken.data as JwtPayload).role;
     }
 

@@ -25,6 +25,9 @@ const verifyToken = async (
       data: decoded,
     };
   } catch (error) {
+    console.log("JWT verify error:", (error as Error).message);
+    console.log("secret length:", String(secret ?? "").length);
+
     return {
       success: false,
       data: null,

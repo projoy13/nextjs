@@ -60,58 +60,126 @@ export default function Myrentals() {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const handlePayment = async () => {
-    if (!gear || !startDate || !endDate || rentalDays <= 0) {
-      alert("Please select valid rental dates.");
-      return;
-    }
+  
+const handlePayment = async () => {
+  if (!gear || !startDate || !endDate || rentalDays <= 0) {
+    alert("Please select valid rental dates.");
+    return;
+  }
 
-    if (gear.stock <= 0) {
-      alert("This gear is out of stock.");
-      return;
-    }
+  if (gear.stock <= 0) {
+    alert("This gear is out of stock.");
+    return;
+  }
 
-    try {
-      setPaying(true);
+  try {
+    setPaying(true);
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5000"}/api/payment/create-checkout-session`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            gearItemId: gear.id,
-            startDate,
-            endDate,
-            totalPrice,
-          }),
-        }
-      );
-
-      const result = await res.json();
-
-      if (!res.ok) {
-        throw new Error(result.message || "Payment failed");
+    // STEP 1: Create rental order
+    const rentalResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/rental`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          startDate,
+          endDate,
+          items: [
+            {
+              gearId: gear.id,
+              quantity: 1,
+            },
+          ],
+        }),
       }
+    );
 
-      if (result.data?.url) {
-        window.location.href = result.data.url;
-      } else {
-        throw new Error("Stripe checkout URL not found.");
-      }
-    } catch (error) {
-      console.error("Payment error:", error);
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Something went wrong."
+    const rentalResult = await rentalResponse.json();
+
+    if (!rentalResponse.ok) {
+      throw new Error(
+        rentalResult.message || "Rental creation failed"
       );
-    } finally {
-      setPaying(false);
     }
-  };
+
+    const rentalOrderId = rentalResult.data?.id;
+
+    if (!rentalOrderId) {
+      throw new Error("Rental order ID not found");
+    }
+
+    // STEP 2: Create payment
+    const paymentResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/payment/create`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          rentalOrderId,
+        }),
+      }
+    );
+
+    const paymentResult = await paymentResponse.json();
+
+    if (!paymentResponse.ok) {
+      throw new Error(
+        paymentResult.message || "Payment creation failed"
+      );
+    }
+
+    const paymentId = paymentResult.data?.id;
+
+    if (!paymentId) {
+      throw new Error("Payment ID not found");
+    }
+
+    // STEP 3: Create Stripe checkout session
+    const checkoutResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/payment/checkout/${paymentId}`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
+
+    const checkoutResult = await checkoutResponse.json();
+
+    if (!checkoutResponse.ok) {
+      throw new Error(
+        checkoutResult.message || "Checkout creation failed"
+      );
+    }
+
+    // IMPORTANT: Your backend returns checkoutUrl
+    const checkoutUrl = checkoutResult.data?.checkoutUrl;
+
+    if (!checkoutUrl) {
+      throw new Error("Stripe checkout URL not found");
+    }
+
+    // STEP 4: Redirect to Stripe
+    window.location.href = checkoutUrl;
+
+  } catch (error) {
+    console.error("Payment error:", error);
+
+    alert(
+      error instanceof Error
+        ? error.message
+        : "Something went wrong"
+    );
+
+    setPaying(false);
+  }
+};
+
 
   if (loading) return <p className="p-10">Loading...</p>;
 

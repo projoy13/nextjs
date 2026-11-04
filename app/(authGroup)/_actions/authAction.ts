@@ -8,7 +8,7 @@ type LoginState = {
   success: true,
   message: string,
   data: {
-    accesseToken: string,
+    accessToken: string,
     refreshToken: string
   }
 }
@@ -36,6 +36,7 @@ export const loginAction = async (
   );
 
   const result = await res.json();
+  console.log("Login response:", res.status, result);
 
   if (!res.ok || !result.success || !result.data) {
     return result;
@@ -57,23 +58,28 @@ export const loginAction = async (
     path: "/",
   });
 
-  const decodedToken = jwt.decode(
-    result.data.accessToken
-  ) as JwtPayload | null;
+ const decodedToken = jwt.decode(
+  result.data.accessToken
+) as JwtPayload | null;
 
-  if (!decodedToken || typeof decodedToken !== "object") {
-    redirect("/login");
-  }
+console.log("Decoded Token:", decodedToken);
+console.log("User Role:", decodedToken?.role);
 
-  if (decodedToken.role === "CUSTOMER") {
-    redirect("/dashboard");
-  } else if (decodedToken.role === "ADMIN") {
-    redirect("/admin-dashboard");
-  } else if (decodedToken.role === "PROVIDER") {
-    redirect("/author-dashboard");
-  } else {
-    redirect("/login");
-  }
+if (!decodedToken) {
+  redirect("/login");
+}
+
+const role = decodedToken.role?.toUpperCase();
+
+if (role === "CUSTOMER") {
+  redirect("/dashboard");
+} else if (role === "ADMIN") {
+  redirect("/admin-dashboard");
+} else if (role === "PROVIDER") {
+  redirect("/author-dashboard");
+} else {
+  redirect("/login");
+}
 };
 
 export const registerAction = async (prevState: LoginState, formData: FormData) => {
