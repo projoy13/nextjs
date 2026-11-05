@@ -4,8 +4,27 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { createRental } from "../../_actions/createRental";
 import { makepayment } from "../../_actions/makepayment";
-// import { createRental } from "@/server/createRental";
-// import { makepayment } from "@/server/makepayment";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+import { Button } from "@/components/ui/button";
+// import { Separator } from "@/components/ui/separator";
+// import { Badge } from "@/components/ui/badge";
+
+import {
+  ShieldCheck,
+  CreditCard,
+  CalendarDays,
+  Badge,
+} from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 interface IGear {
   id: string;
@@ -31,14 +50,19 @@ export default function Myrentals() {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5000"}/api/gear/${id}`
         );
+
         const result = await res.json();
-        if (res.ok) setGear(result.data);
+
+        if (res.ok) {
+          setGear(result.data);
+        }
       } catch (error) {
         console.error("Failed to fetch gear:", error);
       } finally {
         setLoading(false);
       }
     };
+
     getGear();
   }, [id]);
 
@@ -55,6 +79,7 @@ export default function Myrentals() {
       : 0;
 
   const totalPrice = rentalDays * Number(gear?.pricePerDay || 0);
+
   const today = new Date().toISOString().split("T")[0];
 
   const handlePayment = async () => {
@@ -62,6 +87,7 @@ export default function Myrentals() {
       alert("Please select valid rental dates.");
       return;
     }
+
     if (gear.stock <= 0) {
       alert("This gear is out of stock.");
       return;
@@ -69,80 +95,160 @@ export default function Myrentals() {
 
     setPaying(true);
 
-    const rental = await createRental({
-      startDate,
-      endDate,
-      items: [{ gearId: gear.id, quantity: 1 }],
-    });
+    try {
+      const rental = await createRental({
+        startDate,
+        endDate,
+        items: [{ gearId: gear.id, quantity: 1 }],
+      });
 
-    if (!rental.success) {
-      alert(rental.message);
+      if (!rental.success) {
+        alert(rental.message);
+        setPaying(false);
+        return;
+      }
+
+      await makepayment(rental.rentalOrderId);
+    } catch (error) {
+      console.error("Payment error:", error);
       setPaying(false);
-      return;
-    }
-
-    // On success this redirects to Stripe and never returns.
-    const payment = await makepayment(rental.rentalOrderId);
-
-    if (payment && !payment.success) {
-      alert(payment.message);
-      setPaying(false);
+      alert("Something went wrong. Please try again.");
     }
   };
 
-  if (loading) return <p className="p-10">Loading...</p>;
-  if (!gear) return <p className="p-10">Gear not found.</p>;
+  if (loading) {
+    return <p className="p-10 text-center">Loading...</p>;
+  }
+
+  if (!gear) {
+    return <p className="p-10 text-center">Gear not found.</p>;
+  }
 
   return (
-    <div className="max-w-xl mx-auto p-6 mt-10 border rounded-xl shadow-sm">
-      <h1 className="text-2xl font-bold mb-4">Rent {gear.name}</h1>
-      <p className="mb-6">Price per day: €{gear.pricePerDay}</p>
+    <div className="min-h-screen bg-gray-50 px-4 py-10">
+      <Card className="mx-auto mt-6 w-full max-w-xl overflow-hidden rounded-2xl shadow-xl">
 
-      <label className="block mb-2 font-medium">Start Date</label>
-      <input
-        type="date"
-        min={today}
-        value={startDate}
-        onChange={(e) => {
-          setStartDate(e.target.value);
-          setEndDate("");
-        }}
-        className="w-full border rounded-lg p-3 mb-5"
-      />
+        <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white">
+          <div className="flex items-center justify-between">
+            <Badge className="border-0 bg-white/20 text-white">
+              Gear Rental
+            </Badge>
 
-      <label className="block mb-2 font-medium">End Date</label>
-      <input
-        type="date"
-        min={startDate || today}
-        value={endDate}
-        disabled={!startDate}
-        onChange={(e) => setEndDate(e.target.value)}
-        className="w-full border rounded-lg p-3"
-      />
+            <ShieldCheck className="h-6 w-6" />
+          </div>
 
-      {rentalDays > 0 && (
-        <div className="bg-gray-100 p-4 rounded-lg mt-6">
-          <p>Rental days: {rentalDays}</p>
-          <p>Price per day: €{gear.pricePerDay}</p>
-          <h2 className="text-xl font-bold mt-3">
-            Total: €{totalPrice.toFixed(2)}
-          </h2>
-        </div>
-      )}
+          <CardTitle className="mt-3 text-2xl">
+            Rent {gear.name}
+          </CardTitle>
 
-      {gear.stock <= 0 && (
-        <p className="text-red-600 mt-4">This gear is currently out of stock.</p>
-      )}
+          <CardDescription className="text-blue-100">
+            Select your rental dates and complete your payment.
+          </CardDescription>
+        </CardHeader>
 
-      <button
-        onClick={handlePayment}
-        disabled={
-          !startDate || !endDate || rentalDays <= 0 || gear.stock <= 0 || paying
-        }
-        className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
-      >
-        {paying ? "Redirecting to payment..." : `Pay Now €${totalPrice.toFixed(2)}`}
-      </button>
+        <CardContent className="space-y-5 p-6">
+
+          <div>
+            <label className="mb-2 block text-sm font-medium">
+              Start Date
+            </label>
+
+            <input
+              type="date"
+              min={today}
+              value={startDate}
+              onChange={(e) => {
+                setStartDate(e.target.value);
+                setEndDate("");
+              }}
+              className="w-full rounded-lg border p-3"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium">
+              End Date
+            </label>
+
+            <input
+              type="date"
+              min={startDate || today}
+              value={endDate}
+              disabled={!startDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="w-full rounded-lg border p-3 disabled:cursor-not-allowed disabled:opacity-50"
+            />
+          </div>
+
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Gear Name</span>
+            <span className="font-semibold">{gear.name}</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Price Per Day</span>
+            <span className="font-semibold">
+              €{Number(gear.pricePerDay).toFixed(2)}
+            </span>
+          </div>
+
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Rental Days</span>
+            <span className="font-semibold">{rentalDays} days</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <CalendarDays className="h-4 w-4" />
+            {startDate && endDate
+              ? `${startDate} → ${endDate}`
+              : "Select your rental dates"}
+          </div>
+
+          <Separator />
+
+          <div className="flex items-center justify-between">
+            <span className="text-lg font-bold">Total Amount</span>
+
+            <span className="text-3xl font-extrabold text-blue-600">
+              €{totalPrice.toFixed(2)}
+            </span>
+          </div>
+
+          {gear.stock <= 0 && (
+            <p className="text-sm text-red-500">
+              This gear is currently out of stock.
+            </p>
+          )}
+
+        </CardContent>
+
+        <CardFooter className="flex flex-col gap-4 p-6 pt-0">
+
+          <Button
+            onClick={handlePayment}
+            disabled={
+              !startDate ||
+              !endDate ||
+              rentalDays <= 0 ||
+              gear.stock <= 0 ||
+              paying
+            }
+            className="h-12 w-full bg-blue-600 text-base font-bold hover:bg-blue-700"
+          >
+            <CreditCard className="mr-2 h-5 w-5" />
+
+            {paying
+              ? "Redirecting to Stripe..."
+              : `Pay Now €${totalPrice.toFixed(2)}`}
+          </Button>
+
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <ShieldCheck className="h-4 w-4 text-green-600" />
+            Secure checkout powered by Stripe
+          </div>
+
+        </CardFooter>
+      </Card>
     </div>
   );
 }

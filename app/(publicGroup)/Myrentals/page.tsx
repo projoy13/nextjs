@@ -70,9 +70,9 @@ export default function Myrentals() {
         setPaying(true);
 
         const rental = await createRental({
-            gearId: gear.id,
             startDate,
             endDate,
+            items: [{ gearId: gear.id, quantity: 1 }],
         });
 
         if (!rental.success) {

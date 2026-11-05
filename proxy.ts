@@ -166,5 +166,6 @@ export const config = {
          "/login",
         "/register",
         "/news/:path*",
+        "/myrestals/:path*",
     ],
 };
