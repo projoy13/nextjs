@@ -1,4 +1,3 @@
-
 import { getAllGear } from "@/app/service/gear.service";
 import Link from "next/link";
 import Image from "next/image";
@@ -31,24 +30,12 @@ const GearPage = async () => {
 
   return (
     <div className="container mx-auto p-6">
-
-      <h1 className="text-3xl font-bold mb-6">
-        All Gear
-      </h1>
+      <h1 className="text-3xl font-bold mb-6">All Gear</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
         {gears.map((gear) => (
-
-          <Link
-            href={`/Gears/${gear.id}`}
-            key={gear.id}
-            className="block"
-          >
-
+          <Link href={`/Gears/${gear.id}`} key={gear.id} className="block">
             <div className="border rounded-xl p-4 hover:shadow-lg transition cursor-pointer">
-
-              {/* Gear Image */}
               <div className="relative w-full h-52 mb-4">
                 <Image
                   src={gear.image || "/default-gear.png"}
@@ -59,38 +46,23 @@ const GearPage = async () => {
                 />
               </div>
 
-              <h2 className="text-xl font-bold">
-                {gear.name}
-              </h2>
+              <h2 className="text-xl font-bold">{gear.name}</h2>
 
-              <p className="text-gray-600 mt-2">
-                {gear.description}
-              </p>
+              <p className="text-gray-600 mt-2">{gear.description}</p>
 
-              <p className="mt-2">
-                Brand: {gear.brand}
-              </p>
+              <p className="mt-2">Brand: {gear.brand}</p>
 
               <p className="font-semibold mt-2">
                 Price: €{gear.pricePerDay} / day
               </p>
 
-              <p>
-                Stock: {gear.stock}
-              </p>
+              <p>Stock: {gear.stock}</p>
 
-              <p className="text-blue-600 mt-3 font-medium">
-                View Details →
-              </p>
-
+              <p className="text-blue-600 mt-3 font-medium">View Details →</p>
             </div>
-
           </Link>
-
         ))}
-
       </div>
-
     </div>
   );
 };

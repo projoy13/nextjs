@@ -159,6 +159,7 @@ export async function proxy(request: NextRequest) {
 // Define which routes should run through this proxy
 export const config = {
     matcher: [
+        // "/",
         "/dashboard/:path*",
         "/admin-dashboard/:path*",
         "/provider-dashboard/:path*",
