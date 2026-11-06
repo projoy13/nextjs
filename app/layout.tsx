@@ -3,6 +3,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import Navbar from "@/components/ui/shared/navbar";
 import { getMe } from "@/server/getMe";
+import Footer from "@/components/ui/shared/footer";
 
 export default async function RootLayout({
   children,
@@ -12,11 +13,17 @@ export default async function RootLayout({
   const user=await getMe()
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">
-        <Navbar user={user}></Navbar>
-        <Toaster position="top-right"></Toaster>
-        {children}
-      </body>
-    </html>
+  <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 bg-red-400">
+    <Navbar user={user} />
+
+    <Toaster position="top-right" />
+
+    <main className="flex-1">
+      {children}
+    </main>
+
+    <Footer />
+  </body>
+</html>
   );
 }

@@ -110,7 +110,7 @@ export default function PaymentSuccessPage() {
             asChild
             className="h-12 w-full rounded-xl bg-green-600 text-base font-semibold hover:bg-green-700"
           >
-            <Link href="/myrentals">
+            <Link href="/UsersRentals">
               Go to My Rentals
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>

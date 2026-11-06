@@ -1,6 +1,7 @@
-import { getAllGear } from "@/app/service/gear.service";
+// import { getAllGear } from "@/app/service/gear.service";
 import Link from "next/link";
 import Image from "next/image";
+import { getAllGear } from "../_actions/gearService";
 
 interface IGear {
   id: string;
