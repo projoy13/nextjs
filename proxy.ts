@@ -152,6 +152,13 @@ export async function proxy(request: NextRequest) {
         );
     }
 
+    if(pathname.startsWith("/rentals/userRentals")&& !accessToken){
+        return NextResponse.redirect(new URL("/login"))
+    }
+    if(pathname.startsWith("/Myrentals")&& !accessToken){
+        return NextResponse.redirect(new URL("/login"))
+    }
+
     // Allow the request to continue if all checks pass
     return response;
 }
@@ -166,6 +173,7 @@ export const config = {
          "/login",
         "/register",
         "/news/:path*",
-        // "/myrestals/:path*",
+        "/rentals/userRentals/:path*",
+        "/Myrentals/:path*",
     ],
 };

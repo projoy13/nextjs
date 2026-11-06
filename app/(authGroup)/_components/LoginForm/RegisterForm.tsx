@@ -64,7 +64,7 @@ const RegisterForm = () => {
     <SelectContent>
         <SelectItem value="CUSTOMER">Customer</SelectItem>
         <SelectItem value="PROVIDER">Provider</SelectItem>
-        <SelectItem value="ADMIN">Admin</SelectItem>
+        {/* <SelectItem value="ADMIN">Admin</SelectItem> */}
     </SelectContent>
 </Select>
 

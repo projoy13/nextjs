@@ -31,7 +31,7 @@ const navItems = [
   { label: "Home", href: "/" },
   { label: "Gears", href: "/Gears" },
   { label: "Reviews", href: "/Reviews" },
-  { label: "My Rentals", href: "/Myrentals" },
+  { label: "My Rentals", href: "/rentals/userRentals" },
   { label: "About", href: "/about" },
 ];
 
