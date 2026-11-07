@@ -45,7 +45,7 @@ const GearDetailsPage = async ({ params }: GearDetailsPageProps) => {
   const gear: IGear = result.data;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-6xl mx-auto px-4 py-10 ">
       <div className="grid md:grid-cols-2 gap-10">
         {/* Gear Image */}
         <div className="bg-gray-100 rounded-xl overflow-hidden min-h-80 flex items-center justify-center">

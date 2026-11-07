@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getAllGear } from "../_actions/gearService";
+import { SearchBarPage } from "../Search/page";
+// import SearchBarPage from "../Search/page";
 
 interface IGear {
   id: string;
@@ -36,9 +38,11 @@ const GearPage = async ({ searchParams }: GearPageProps) => {
   const gears: IGear[] = response.data || [];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 ">
       <div className="container mx-auto px-4 py-10">
-        <div className="mb-8">
+
+        <div className="flex justify-between">
+            <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-900">
             All Gear
           </h1>
@@ -51,6 +55,13 @@ const GearPage = async ({ searchParams }: GearPageProps) => {
             {gears.length} gear items found
           </p>
         </div>
+        <div>
+          <SearchBarPage/>
+
+         
+        </div>
+        </div>
+       
 
         {gears.length === 0 ? (
           <div className="rounded-xl border bg-white p-10 text-center">

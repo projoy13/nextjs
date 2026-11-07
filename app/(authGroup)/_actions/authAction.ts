@@ -76,7 +76,7 @@ if (role === "CUSTOMER") {
 } else if (role === "ADMIN") {
   redirect("/admin-dashboard");
 } else if (role === "PROVIDER") {
-  redirect("/author-dashboard");
+  redirect("/provider-dashboard");
 } else {
   redirect("/login");
 }
