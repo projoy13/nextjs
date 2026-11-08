@@ -80,3 +80,51 @@ export const createGear = async (
     };
   }
 };
+
+export const getMygear = async () => {
+  try {
+    const cookiesStore = await cookies();
+    const accessToken = cookiesStore.get("accessToken")?.value;
+
+    if (!accessToken) {
+      return {
+        success: false,
+        message: "User not logged in",
+        data: [],
+      };
+    }
+
+    const res = await fetch(
+      `${process.env.BACKEND_API_URL}/api/gear/mygear`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    const result = await res.json();
+
+    console.log("My Gear Response:", result);
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: result.message || "Failed to get your gear",
+        data: [],
+      };
+    }
+
+    return result;
+  } catch (error) {
+    console.error("GET MY GEAR ERROR:", error);
+
+    return {
+      success: false,
+      message: "Something went wrong",
+      data: [],
+    };
+  }
+};
