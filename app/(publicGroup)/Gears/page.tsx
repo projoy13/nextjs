@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getAllGear } from "../_actions/gearService";
-import { SearchBarPage } from "../Search/[id]/page";
+import { SearchBarPage } from "../Search/page";
+// import { SearchBarPage } from "../Search/[id]/page";
 // import { SearchBarPage } from "../Search/page";
 // import SearchBarPage from "../Search/page";
 
