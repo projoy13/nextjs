@@ -1,5 +1,6 @@
 import React from 'react'
-import { SearchBarPage } from '../page'
+import SearchBarPage from '../page'
+// import { SearchBarPage } from '../page'
 
 const page = () => {
   return (

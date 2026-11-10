@@ -6,7 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 // import { useRouter } from "next/router";
 import React, { useRef } from "react";
 
-export function SearchBarPage() {
+export default  function SearchBarPage() {
     const pathname=usePathname()
     const searchParams=useSearchParams()
     const router=useRouter()
