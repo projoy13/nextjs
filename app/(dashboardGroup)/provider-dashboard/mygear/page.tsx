@@ -1,6 +1,9 @@
+
 import { getMygear } from "@/app/(dashboardGroup)/_actions/providerPostAction";
 import Link from "next/link";
 import DeleteGearButton from "../../_components/DeleteGearButton";
+
+export const dynamic = "force-dynamic";
 
 interface Gear {
   id: string;
@@ -9,7 +12,7 @@ interface Gear {
   pricePerDay: string | number;
   stock: number;
   image?: string | null;
-  description?:string | null
+  description?: string | null;
 }
 
 const MyGearPage = async () => {
@@ -21,8 +24,6 @@ const MyGearPage = async () => {
 
   const gears: Gear[] = result.data || [];
 
-  
-
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="mx-auto max-w-6xl">
@@ -30,7 +31,7 @@ const MyGearPage = async () => {
 
         {gears.length === 0 ? (
           <p className="rounded-lg border bg-white p-8 text-center text-gray-500">
-            You  have not created any gear yet.
+            You have not created any gear yet.
           </p>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -63,26 +64,23 @@ const MyGearPage = async () => {
                   </p>
 
                   <p className="mt-2">Stock: {gear.stock}</p>
-                  <p className="mt-2">Discription {gear.description}</p>
+
+                  <p className="mt-2">
+                    Description: {gear.description || "No description"}
+                  </p>
                 </div>
 
-                <div className="flex justify-center gap-6">
-            
+                <div className="flex justify-center gap-6 p-5 pt-0">
+                  <Link
+                    href={`/provider-dashboard/updateGear/${gear.id}`}
+                    className="rounded-md bg-blue-600 px-5 py-2 text-white transition-all duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-lg"
+                  >
+                    Edit
+                  </Link>
 
-  <div className="flex justify-center gap-6">
-  <Link
-    href={`/provider-dashboard/updateGear/${gear.id}`}
-    className="rounded-md bg-blue-600 px-5 py-2 text-white transition-all duration-300 hover:bg-blue-700 hover:scale-105 shadow-sm hover:shadow-lg"
-  >
-    Edit
-  </Link>
-
-  <DeleteGearButton gearId={gear.id} />
-</div>
-
+                  <DeleteGearButton gearId={gear.id} />
                 </div>
-           
-</div>
+              </div>
             ))}
           </div>
         )}
