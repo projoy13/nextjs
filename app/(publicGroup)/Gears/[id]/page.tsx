@@ -96,7 +96,7 @@ const GearDetailsPage = async ({ params }: GearDetailsPageProps) => {
 
           {gear.stock > 0 && gear.status === "AVAILABLE" ? (
            <Link
-  href={`//${gear.id}`}
+  href={`/Myrentals/${gear.id}`}
   className="inline-block mt-8 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold"
 >
   Rent Now
