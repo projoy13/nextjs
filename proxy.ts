@@ -80,7 +80,7 @@ export async function proxy(request: NextRequest) {
 }
 
     // Get the user's role from the decoded access token
-    if (decodedAccessToken?.success && decodedRefreshToken?.data) {
+    if (decodedAccessToken?.success && decodedRefreshToken?.success) {
         userRole = (decodedAccessToken.data as JwtPayload).role;
     }
 
@@ -119,12 +119,17 @@ export async function proxy(request: NextRequest) {
         }
     }
 
-    // If the user is not logged in and visits a protected page, redirect to login
-    if (!accessToken && !isPublic && !isAuthRoute) {
-        return NextResponse.redirect(
-            new URL("/login", request.url)
-        );
-    }
+   // If the user is not logged in and visits a protected page, redirect to login
+if (!accessToken && !isPublic && !isAuthRoute) {
+    const loginUrl = new URL("/login", request.url);
+
+    loginUrl.searchParams.set(
+        "redirect",
+        pathname + request.nextUrl.search
+    );
+
+    return NextResponse.redirect(loginUrl);
+}
 
     // Only CUSTOMER users can access the customer dashboard
     if (
@@ -141,6 +146,7 @@ export async function proxy(request: NextRequest) {
     ) {
         return NextResponse.redirect(
             new URL("/not-found", request.url)
+            
         );
     } else if (
         // Only PROVIDER users can access the provider dashboard

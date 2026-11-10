@@ -15,6 +15,7 @@ type LoginState = {
 
 
 export const loginAction = async (
+  redirectTo :string,
   prevState: LoginState,
   formData: FormData
 ) => {
@@ -70,6 +71,11 @@ if (!decodedToken) {
 }
 
 const role = decodedToken.role?.toUpperCase();
+
+if(redirectTo &&  redirectTo.startsWith("/") && !redirectTo.startsWith("//") ){
+  redirect(redirectTo)
+}
+
 
 if (role === "CUSTOMER") {
   redirect("/dashboard");

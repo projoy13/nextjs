@@ -4,25 +4,37 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { loginAction } from "../../_actions/authAction"
 import { useActionState, useEffect } from "react"
 import { toast } from "sonner"
-import { useRouter } from "next/navigation"
+import { useSearchParams } from "next/navigation"
+import { loginAction } from "../../_actions/authAction"
 
 const LoginForm = () => {
-    const [state, action, pending] = useActionState(loginAction, false)
-    const router = useRouter()
+    const searchParams = useSearchParams()
+
+    // Read the same parameter name used in the proxy
+    const requestedRedirect = searchParams.get("redirect")
+
+    const redirectTo =
+        requestedRedirect?.startsWith("/") &&
+        !requestedRedirect.startsWith("//")
+            ? requestedRedirect
+            : ""
+
+    const [state, action, pending] = useActionState(
+        loginAction.bind(null, redirectTo),
+        false
+    )
 
     useEffect(() => {
         if (!state) return
 
         if (state.success) {
             toast.success(state.message || "Login successful!")
-            router.push("/dashboard")
         } else {
             toast.error(state.message || "Login failed")
         }
-    }, [state, router])
+    }, [state])
 
     return (
         <form action={action} className="space-y-4">

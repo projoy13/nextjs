@@ -1,6 +1,8 @@
 
 "use server";
 
+import { jwtUtils } from "@/app/utils/jwt";
+import { getrefreshToken } from "@/server/refreshtoken";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
@@ -11,21 +13,73 @@ export type PostState = {
   data?: Record<string, unknown>;
 };
 
+
 export const createGear = async (
   prevState: PostState,
   formData: FormData
 ): Promise<PostState> => {
   try {
     const cookiesStore = await cookies();
-    const accessToken = cookiesStore.get("accessToken")?.value;
 
-    if (!accessToken) {
+    let accessToken = cookiesStore.get("accessToken")?.value;
+    const refreshToken = cookiesStore.get("refreshToken")?.value;
+
+    if (!accessToken && !refreshToken) {
       return {
         success: false,
         message: "User not logged in",
       };
     }
 
+    // Verify access token
+    const decodedAccessToken = accessToken
+      ? await jwtUtils.verifyToken(
+          accessToken,
+          process.env.JWT_ACCESS_SECRET as string
+        )
+      : null;
+
+    // Verify refresh token
+    const decodedRefreshToken = refreshToken
+      ?  await jwtUtils.verifyToken(
+          refreshToken,
+          process.env.JWT_REFRESH_SECRET as string
+        )
+      : null;
+
+    // Refresh access token if expired or invalid
+    if (!decodedAccessToken?.success) {
+      if (!decodedRefreshToken?.success) {
+        return {
+          success: false,
+          message: "Session expired. Please login again.",
+        };
+      }
+
+      const result = await getrefreshToken();
+
+      if (!result.success) {
+        return {
+          success: false,
+          message: "Failed to refresh token. Please login again.",
+        };
+      }
+
+      const newAccessToken = result.data.accessToken;
+
+      // Save new access token in cookie
+      cookiesStore.set("accessToken", newAccessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 60 * 60 * 24,
+        sameSite: "lax",
+        path: "/",
+      });
+
+      accessToken = newAccessToken;
+    }
+
+    // Get form data
     const payload = {
       name: String(formData.get("name") || ""),
       description: String(formData.get("description") || ""),
@@ -38,8 +92,9 @@ export const createGear = async (
 
     console.log("Gear payload:", payload);
 
+    // Send request to backend
     const res = await fetch(
-      `${process.env.BACKEND_API_URL}/api/gear/creat`,
+      `${process.env.BACKEND_API_URL}/api/gear/create`,
       {
         method: "POST",
         headers: {
@@ -48,15 +103,15 @@ export const createGear = async (
         },
         body: JSON.stringify(payload),
       }
-      
     );
 
     const result = await res.json();
 
-   console.log(
-  "Backend response:",
-  JSON.stringify(result, null, 2)
-);
+    console.log(
+      "Backend response:",
+      JSON.stringify(result, null, 2)
+    );
+
     if (!res.ok) {
       return {
         success: false,
@@ -80,6 +135,7 @@ export const createGear = async (
     };
   }
 };
+
 
 export const getMygear = async () => {
   try {

@@ -33,7 +33,7 @@ const ProviderDashboard = () => {
       title: "Delete Gear",
       description: "Remove gear items you no longer want to rent.",
       icon: Trash2,
-      href: "/ProviderMyGear",
+      href: "/Provider-dashboard/mygear",
       color: "bg-red-100 text-red-600",
     },
   ];
