@@ -1,3 +1,4 @@
+
 import AppSidebar from "./_components/AppSidebar";
 
 import {
@@ -7,19 +8,21 @@ import {
 } from "@/components/ui/sidebar";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { getMe } from "@/server/getMe";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+    const user=await getMe()
   return (
     <TooltipProvider>
       <SidebarProvider>
-        <AppSidebar />
+        <AppSidebar user={user} />
 
         <SidebarInset>
-          <header className="flex h-14 items-center gap-3 border-b px-4">
+          <header className="flex h-14 items-center gap-3 border-b bg-white px-4">
             <SidebarTrigger />
             <h1 className="font-semibold">
               Provider Dashboard

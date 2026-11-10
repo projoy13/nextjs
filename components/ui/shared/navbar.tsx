@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -12,6 +13,7 @@ import {
   LogOut,
   Mountain,
   ChevronDown,
+  LayoutDashboard,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -26,38 +28,38 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { logout } from "@/server/logout";
+import type { NavbarProps } from "@/lib/types";
 
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Gears", href: "/Gears" },
   { label: "Reviews", href: "/Reviews" },
-  { label: "My Rentals", href: "/rentals/userRentals" },
+  // { label: "My Rentals", href: "/rentals/userRentals" },
   { label: "About", href: "/about" },
 ];
 
 const userMenuItems = [
+  { label: "Dashboard", icon: LayoutDashboard, action: "dashboard" },
   { label: "Profile", href: "/profile", icon: User },
   { label: "Settings", href: "/settings", icon: Settings },
   { label: "Billing", href: "/billing", icon: CreditCard },
 ];
 
-type IUser = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-};
-
-type NavbarProps = {
-  user: IUser | null;
-};
-
-export default function Navbar({ user }: NavbarProps) {
+export default function Navbar({ user = null }: NavbarProps) {
   const pathname = usePathname();
   const router = useRouter();
+
+  const handleUserMenuAction = (action: string) => {
+    if (action === "dashboard") {
+      if (user?.role === "CUSTOMER") {
+        router.push("/dashboard");
+      } else if (user?.role === "ADMIN") {
+        router.push("/admin-dashboard");
+      } else if (user?.role === "PROVIDER") {
+        router.push("/provider-dashboard");
+      }
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -77,7 +79,6 @@ export default function Navbar({ user }: NavbarProps) {
 
   return (
     <main className="min-h-screen bg-[#f4f7f2]">
-
       {/* NAVBAR */}
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#101d1b] shadow-lg">
         <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 lg:px-8">
@@ -185,11 +186,19 @@ export default function Navbar({ user }: NavbarProps) {
                     const Icon = item.icon;
 
                     return (
-                      <DropdownMenuItem key={item.href} asChild>
-                        <Link href={item.href}>
-                          <Icon className="mr-2 size-4" />
-                          {item.label}
-                        </Link>
+                      <DropdownMenuItem
+                        key={item.label}
+                        onSelect={() => {
+                          if (item.action) {
+                            handleUserMenuAction(item.action);
+                          } else if (item.href) {
+                            router.push(item.href);
+                          }
+                        }}
+                        className="cursor-pointer"
+                      >
+                        <Icon className="mr-2 size-4" />
+                        {item.label}
                       </DropdownMenuItem>
                     );
                   })}

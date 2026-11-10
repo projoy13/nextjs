@@ -1,3 +1,4 @@
+
 import type React from "react";
 import "./globals.css";
 import { Toaster } from "sonner";
@@ -10,20 +11,21 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user=await getMe()
+  const user = await getMe();
+
   return (
     <html lang="en" className="h-full antialiased">
-  <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 bg-red-400">
-    <Navbar user={user} />
+      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900">
+        <Navbar user={user} />
 
-    <Toaster position="top-right" />
+        <main className="flex-1">
+          {children}
+        </main>
 
-    <main className="flex-1">
-      {children}
-    </main>
+        <Toaster position="top-right" />
 
-    <Footer />
-  </body>
-</html>
+        <Footer />
+      </body>
+    </html>
   );
 }
