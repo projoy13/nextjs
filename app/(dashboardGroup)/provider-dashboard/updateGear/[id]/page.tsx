@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 // import { useRouter } from "next/router";
 
 export default function UpdateGearPage() {
@@ -32,12 +33,16 @@ export default function UpdateGearPage() {
     updateGear.bind(null, id),
     { success: false, message: "" }
   );
-  useEffect(()=>{
-    if(state.success){
+ useEffect(() => {
+    if (!state.message) return;
+
+    if (state.success) {
+        toast.success(state.message || "Gear updated successfully!");
         router.push("/provider-dashboard/mygear");
+    } else {
+        toast.error(state.message || "Failed to update gear");
     }
-  }
-,[state.success,router])
+}, [state.success, state.message, router]);
 
 
   return (

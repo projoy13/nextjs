@@ -15,7 +15,8 @@ export default function DeleteGearButton({ gearId }: DeleteGearButtonProps) {
   const router = useRouter();
 
   const handleDelete = () => {
-    startTransition(async () => {
+  startTransition(async () => {
+    try {
       const formData = new FormData();
 
       const result = await deleteGear(
@@ -28,13 +29,17 @@ export default function DeleteGearButton({ gearId }: DeleteGearButtonProps) {
       );
 
       if (result.success) {
-        toast.success(result.message);
+        toast.success(result.message || "Gear deleted successfully!");
         router.refresh();
       } else {
-        toast.error(result.message);
+        toast.error(result.message || "Failed to delete gear");
       }
-    });
-  };
+    } catch (error) {
+      toast.error("Something went wrong while deleting gear");
+      console.error(error);
+    }
+  });
+};
 
   return (
     <button
