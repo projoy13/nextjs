@@ -25,7 +25,7 @@ export default async function DashboardLayout({
           <header className="flex h-14 items-center gap-3 border-b bg-white px-4">
             <SidebarTrigger />
             <h1 className="font-semibold">
-              Provider Dashboard
+               Dashboard
             </h1>
           </header>
 

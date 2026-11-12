@@ -3,7 +3,7 @@
 
 import { jwtUtils } from "@/app/utils/jwt";
 import { getrefreshToken } from "@/server/refreshtoken";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
 export type PostState = {
@@ -13,7 +13,7 @@ export type PostState = {
   data?: Record<string, unknown>;
 };
 
-
+// CREATE GEAR
 export const createGear = async (
   prevState: PostState,
   formData: FormData
@@ -31,7 +31,6 @@ export const createGear = async (
       };
     }
 
-    // Verify access token
     const decodedAccessToken = accessToken
       ? await jwtUtils.verifyToken(
           accessToken,
@@ -39,15 +38,13 @@ export const createGear = async (
         )
       : null;
 
-    // Verify refresh token
     const decodedRefreshToken = refreshToken
-      ?  await jwtUtils.verifyToken(
+      ? await jwtUtils.verifyToken(
           refreshToken,
           process.env.JWT_REFRESH_SECRET as string
         )
       : null;
 
-    // Refresh access token if expired or invalid
     if (!decodedAccessToken?.success) {
       if (!decodedRefreshToken?.success) {
         return {
@@ -67,7 +64,6 @@ export const createGear = async (
 
       const newAccessToken = result.data.accessToken;
 
-      // Save new access token in cookie
       cookiesStore.set("accessToken", newAccessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -79,7 +75,6 @@ export const createGear = async (
       accessToken = newAccessToken;
     }
 
-    // Get form data
     const payload = {
       name: String(formData.get("name") || ""),
       description: String(formData.get("description") || ""),
@@ -92,7 +87,6 @@ export const createGear = async (
 
     console.log("Gear payload:", payload);
 
-    // Send request to backend
     const res = await fetch(
       `${process.env.BACKEND_API_URL}/api/gear/create`,
       {
@@ -107,10 +101,7 @@ export const createGear = async (
 
     const result = await res.json();
 
-    console.log(
-      "Backend response:",
-      JSON.stringify(result, null, 2)
-    );
+    console.log("Backend response:", result);
 
     if (!res.ok) {
       return {
@@ -125,7 +116,6 @@ export const createGear = async (
     }
 
     return result;
-
   } catch (error) {
     console.error("CREATE GEAR ERROR:", error);
 
@@ -136,7 +126,7 @@ export const createGear = async (
   }
 };
 
-
+// GET MY GEAR
 export const getMygear = async () => {
   try {
     const cookiesStore = await cookies();
@@ -185,8 +175,9 @@ export const getMygear = async () => {
   }
 };
 
+// UPDATE GEAR
 export const updateGear = async (
-    id:string,
+  id: string,
   prevState: PostState,
   formData: FormData
 ): Promise<PostState> => {
@@ -223,20 +214,17 @@ export const updateGear = async (
         },
         body: JSON.stringify(payload),
       }
-      
     );
 
     const result = await res.json();
 
-   console.log(
-  "Backend response:",
-  JSON.stringify(result, null, 2)
-);
+    console.log("Backend response:", result);
+
     if (!res.ok) {
       return {
         success: false,
         statusCode: res.status,
-        message: result.message || "Failed to create gear",
+        message: result.message || "Failed to update gear",
       };
     }
 
@@ -245,9 +233,8 @@ export const updateGear = async (
     }
 
     return result;
-
   } catch (error) {
-    console.error("CREATE GEAR ERROR:", error);
+    console.error("UPDATE GEAR ERROR:", error);
 
     return {
       success: false,
@@ -256,6 +243,7 @@ export const updateGear = async (
   }
 };
 
+// DELETE GEAR
 export const deleteGear = async (
   id: string,
   prevState: PostState,
@@ -296,13 +284,14 @@ export const deleteGear = async (
     }
 
     revalidateTag("my-posts", "max");
+    revalidatePath("/provider-dashboard/mygear");
 
     return {
       success: true,
       message: result.message || "Gear deleted successfully",
     };
   } catch (error) {
-    console.error("Delete gear error:", error);
+    console.error("DELETE GEAR ERROR:", error);
 
     return {
       success: false,
@@ -311,3 +300,110 @@ export const deleteGear = async (
   }
 };
 
+// GET PROVIDER ORDERS
+export const getProviderOrders = async () => {
+  try {
+    const cookiesStore = await cookies();
+    const accessToken = cookiesStore.get("accessToken")?.value;
+
+    if (!accessToken) {
+      return {
+        success: false,
+        message: "Please login first",
+        data: [],
+      };
+    }
+
+    const res = await fetch(
+      `${process.env.BACKEND_API_URL}/api/rentals/provider/orders`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    const result = await res.json();
+
+    console.log("Provider Orders Response:", result);
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: result.message || "Failed to get orders",
+        data: [],
+      };
+    }
+
+    return result;
+
+  } catch (error) {
+    console.error("GET PROVIDER ORDERS ERROR:", error);
+
+    return {
+      success: false,
+      message: "Something went wrong",
+      data: [],
+    };
+  }
+};
+
+// UPDATE ORDER STATUS
+export const updateOrderStatus = async (
+  orderid: string,
+  status: "CONFIRMED" | "PICKEDUP" | "RETURNED"
+) => {
+  try {
+    const cookiesStore = await cookies();
+    const accessToken = cookiesStore.get("accessToken")?.value;
+
+    if (!accessToken) {
+      return {
+        success: false,
+        message: "Please login first",
+      };
+    }
+
+    const res = await fetch(
+      `${process.env.BACKEND_API_URL}/api/rentals/${orderid}/status`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ status }),
+        cache: "no-store",
+      }
+    );
+
+    const result = await res.json();
+
+    console.log("Update Order Response:", result);
+
+    if (!res.ok || !result.success) {
+      return {
+        success: false,
+        statusCode: res.status,
+        message: result.message || "Failed to update order",
+      };
+    }
+
+    revalidatePath("/provider-dashboard/order-management");
+
+    return {
+      success: true,
+      message: result.message || "Order updated successfully",
+    };
+
+  } catch (error) {
+    console.error("UPDATE ORDER STATUS ERROR:", error);
+
+    return {
+      success: false,
+      message: "Something went wrong",
+    };
+  }
+};

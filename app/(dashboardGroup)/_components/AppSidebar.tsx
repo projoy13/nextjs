@@ -19,7 +19,8 @@ import {
 
 // import { sidebarMenuItems } from "../_config/sidebarMenuitems";
 import type { ISidebarItem, NavbarProps } from "@/lib/types";
-import { sidebarMenuItems } from "../provider-dashboard/_config/sidebarMenuitems";
+import { sidebarMenuItems } from "@/app/_config/sidebarMenuitemis";
+// import { sidebarMenuItems } from "../provider-dashboard/_config/sidebarMenuitems";
 
 export default function AppSidebar({ user }: NavbarProps) {
   const pathname = usePathname();
