@@ -1,5 +1,5 @@
 import { ISidebarItem } from "@/lib/types"
-import { FileText, LayoutDashboard, LucideIcon } from "lucide-react"
+import { FileText, LayoutDashboard, LucideIcon, User, User2 } from "lucide-react"
 
 
 
@@ -14,7 +14,7 @@ const CUSTOMER_SIDEBAR_ITEMS:ISidebarItem[]=[
     },
     {
         label:"My rentals",
-        href:"/Myrentals",
+        href:"/UsersRentals",
         icon:FileText
 
     },
@@ -34,7 +34,7 @@ const Provider_SIDEBAR_ITEMS:ISidebarItem[]=[
     },
     {
         label:"my Gears",
-        href:"/provider-dashboard/mygear",
+        href:"/provider-dashboard/usergear",
         icon:FileText
 
     }
@@ -47,11 +47,18 @@ const ADMIN_SIDEBAR_ITEMS:ISidebarItem[]=[
 
     },
     {
-        label:"my rentals",
+        label:"See All gears",
         href:"/Gears",
         icon:FileText
 
+    },
+    {
+        label:"See All users",
+        href:"/admin-dashboard/All-users",
+        icon:User
+
     }
+
 ]
 
 export const sidebarMenuItems={

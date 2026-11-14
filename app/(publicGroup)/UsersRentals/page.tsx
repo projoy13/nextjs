@@ -1,11 +1,7 @@
-// import { getAllirental } from "@/app/service/gear.service";
+
 import Link from "next/link";
 import Image from "next/image";
 import { getUserRental } from "../_actions/getUserRental";
-// import { getAllGear } from "../_actions/gearService";
-// import { getMyRentals } from "@/server/getMytentals";
-
-
 
 export interface IRental {
   id: string;
@@ -39,8 +35,6 @@ export interface IRental {
   } | null;
 }
 
-
-
 const UsersRentals = async () => {
   const response = await getUserRental();
 
@@ -48,42 +42,59 @@ const UsersRentals = async () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">All irental</h1>
+      <h1 className="text-3xl font-bold mb-6">All Rentals</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {irentals.map((irental) => (
-          <Link href={`/irentals/${irental.id}`} key={irental.id} className="block">
-            <div className="border rounded-xl p-4 hover:shadow-lg transition cursor-pointer">
+          <div
+            key={irental.id}
+            className="border rounded-xl p-4 hover:shadow-lg transition"
+          >
               <div className="relative w-full h-52 mb-4">
                 <Image
-                  src={irental.items[0]?.gearItem.image || "/default-irental.png"}
-                  alt={irental.items[0]?.gearItem.name}
+                  src={
+                    irental.items[0]?.gearItem.image ||
+                    "/default-irental.png"
+                  }
+                  alt={
+                    irental.items[0]?.gearItem.name || "Gear item"
+                  }
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover rounded-lg"
                 />
               </div>
 
-              <h2 className="text-xl font-bold">{irental.items[0]?.gearItem.name}</h2>
+              <h2 className="text-xl font-bold">
+                {irental.items[0]?.gearItem.name}
+              </h2>
 
-              <p className="text-gray-600 mt-2">price per day: {irental.items[0]?.gearItem.pricePerDay}</p>
-
-              {/* <p className="mt-2">Brand: {irental.brand}</p> */}
-
-              <p className="font-semibold mt-2">
-                start date: {irental.startDate} / day
-             
-              </p>
-              <p className="font-semibold mt-2">
-                
-                end date: {irental.endDate} / day
+              <p className="text-gray-600 mt-2">
+                Price per day:{" "}
+                {irental.items[0]?.gearItem.pricePerDay}
               </p>
 
-              {/* <p>Stock: {irental.stock}</p> */}
+              <p className="font-semibold mt-2">
+                Start date: {irental.startDate}
+              </p>
 
-              {/* <p className="text-blue-600 mt-3 font-medium">View Details →</p> */}
+              <p className="font-semibold mt-2">
+                End date: {irental.endDate}
+              </p>
+
+            <div className="flex justify-center mt-6">
+              {irental.items[0]?.gearItem.id && (
+                <Link
+                  href={`dashboard/reviews?gearItemId=${encodeURIComponent(
+                    irental.items[0].gearItem.id
+                  )}`}
+                  className="rounded-lg bg-slate-800 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-slate-700 active:scale-95"
+                >
+                  Write Review
+                </Link>
+              )}
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </div>
