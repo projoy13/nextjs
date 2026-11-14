@@ -59,5 +59,5 @@ export const createReview = async (formData: FormData) => {
   revalidatePath("/UsersRentals");
 
   // Redirect after successful submission
-  redirect("/UsersRentals");
+  redirect("/UsersRentals?review=submitted");
 };

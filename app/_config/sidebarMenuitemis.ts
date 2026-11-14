@@ -34,7 +34,7 @@ const Provider_SIDEBAR_ITEMS:ISidebarItem[]=[
     },
     {
         label:"my Gears",
-        href:"/provider-dashboard/usergear",
+        href:"/provider-dashboard/mygear",
         icon:FileText
 
     }

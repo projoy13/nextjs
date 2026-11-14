@@ -407,3 +407,91 @@ export const updateOrderStatus = async (
     };
   }
 };
+
+
+// export const markReturned = async (formData: FormData) => {
+//   const rentalId = formData.get("rentalId") as string;
+
+//   if (!rentalId) {
+//     throw new Error("Rental ID is required");
+//   }
+
+//   const cookieStore = await cookies();
+//   const accessToken = cookieStore.get("accessToken")?.value;
+
+//   if (!accessToken) {
+//     throw new Error("Please login first");
+//   }
+
+//   const res = await fetch(
+//     `${process.env.BACKEND_API_URL}/api/rental/${rentalId}/status`,
+//     {
+//       method: "PATCH",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${accessToken}`,
+//       },
+//       body: JSON.stringify({
+//         status: "RETURNED",
+//       }),
+//       cache: "no-store",
+//     }
+//   );
+
+//   const result = await res.json();
+
+//   if (!res.ok || !result.success) {
+//     throw new Error(result.message || "Failed to mark returned");
+//   }
+
+//   revalidatePath("/provider-dashboard/orders");
+
+//   return {
+//     success: true,
+//     message: "Rental marked as returned successfully",
+//   };
+// };
+
+
+
+export const updateRentalStatus = async (formData: FormData) => {
+  const rentalId = formData.get("rentalId") as string;
+  const status = formData.get("status") as string;
+
+  if (!rentalId || !status) {
+    throw new Error("Rental ID and status are required");
+  }
+
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+
+  if (!accessToken) {
+    throw new Error("Please login first");
+  }
+
+  const res = await fetch(
+    `${process.env.BACKEND_API_URL}/api/rentals/${rentalId}/status`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ status }),
+      cache: "no-store",
+    }
+  );
+
+  const result = await res.json();
+
+  if (!res.ok || !result.success) {
+    throw new Error(result.message || "Failed to update order status");
+  }
+
+  revalidatePath("/provider-dashboard/order-management");
+
+  return {
+    success: true,
+    message: "Order status updated successfully",
+  };
+};
