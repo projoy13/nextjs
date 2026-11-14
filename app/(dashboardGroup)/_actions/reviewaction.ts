@@ -59,5 +59,40 @@ export const createReview = async (formData: FormData) => {
   revalidatePath("/UsersRentals");
 
   // Redirect after successful submission
-  redirect("/UsersRentals?review=submitted");
+  redirect("/UsersRentals");
+};
+
+export const updateReview = async (formData: FormData) => {
+  const reviewId = formData.get("reviewId");
+  const rating = Number(formData.get("rating"));
+  const comment = formData.get("comment");
+
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+
+  if (!reviewId || !accessToken) {
+    throw new Error("Review ID or access token missing");
+  }
+
+  const res = await fetch(
+    `${process.env.BACKEND_API_URL}/api/reviews/${reviewId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ rating, comment }),
+      cache: "no-store",
+    }
+  );
+
+  const result = await res.json();
+
+  if (!res.ok || !result.success) {
+    throw new Error(result.message || "Failed to update review");
+  }
+
+  revalidatePath("/UsersRentals");
+  redirect("/UsersRentals");
 };

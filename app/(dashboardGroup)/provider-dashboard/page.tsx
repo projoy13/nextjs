@@ -96,20 +96,20 @@ const ProviderDashboard = async () => {
       href: "/provider-dashboard/mygear",
       color: "bg-green-100 text-green-600",
     },
-    {
-      title: "Update Gear",
-      description: "Edit your existing gear information.",
-      icon: Pencil,
-      href: "/provider-dashboard/updateGear",
-      color: "bg-orange-100 text-orange-600",
-    },
-    {
-      title: "Delete Gear",
-      description: "Remove gear items you no longer want to rent.",
-      icon: Trash2,
-      href: "/provider-dashboard/mygear",
-      color: "bg-red-100 text-red-600",
-    },
+    // {
+    //   title: "Update Gear",
+    //   description: "Edit your existing gear information.",
+    //   icon: Pencil,
+    //   href: "/provider-dashboard/updateGear",
+    //   color: "bg-orange-100 text-orange-600",
+    // },
+    // {
+    //   title: "Delete Gear",
+    //   description: "Remove gear items you no longer want to rent.",
+    //   icon: Trash2,
+    //   href: "/provider-dashboard/mygear",
+    //   color: "bg-red-100 text-red-600",
+    // },
 
   ];
 

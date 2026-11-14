@@ -1,45 +1,39 @@
 
 "use client"
 
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { useActionState, useEffect } from "react"
 import { toast } from "sonner"
-import { useRouter, useSearchParams } from "next/navigation"
-import { loginAction } from "../../_actions/authAction"
+import { registerAction } from "../../_actions/authAction"
 
-const LoginForm = () => {
-    const searchParams = useSearchParams()
-    const router = useRouter()
-
-    const requestedRedirect = searchParams.get("redirect")
-
-    const redirectTo =
-        requestedRedirect?.startsWith("/") &&
-        !requestedRedirect.startsWith("//")
-            ? requestedRedirect
-            : "/dashboard"
-
+const RegisterForm = () => {
     const [state, action, pending] = useActionState(
-        loginAction.bind(null, redirectTo),
+        registerAction,
         false
     )
 
     useEffect(() => {
         if (!state) return
 
-        if (state.success) {
-            toast.success(state.message || "Login successful!")
-            router.replace(redirectTo)
-        } else {
-            toast.error(state.message || "Login failed")
+        if (!state.success) {
+            toast.error(state.message || "Registration failed")
         }
-    }, [state, router, redirectTo])
+    }, [state])
 
     return (
         <form action={action} className="space-y-4">
-            <Card className="p-8 space-y-4 rounded-lg border">
+            <Card className="space-y-4 rounded-lg border p-8">
+
+                <Input
+                    name="name"
+                    type="text"
+                    placeholder="Enter your name"
+                    required
+                />
+
                 <Input
                     name="email"
                     type="email"
@@ -52,18 +46,47 @@ const LoginForm = () => {
                     type="password"
                     placeholder="Enter your password"
                     required
+                    minLength={6}
                 />
+
+                <div className="space-y-2">
+                    <label htmlFor="role" className="text-sm font-medium">
+                        Select your account type
+                    </label>
+
+                    <select
+                        id="role"
+                        name="role"
+                        required
+                        defaultValue="CUSTOMER"
+                        className="w-full rounded-md border bg-background p-3"
+                    >
+                        <option value="CUSTOMER">Customer</option>
+                        <option value="PROVIDER">Provider</option>
+                    </select>
+                </div>
 
                 <Button
                     type="submit"
                     disabled={pending}
                     className="w-full"
                 >
-                    {pending ? "Submitting..." : "Login"}
+                    {pending ? "Creating Account..." : "Register"}
                 </Button>
+
+                <p className="text-center text-sm text-gray-600">
+                    Already have an account?{" "}
+                    <Link
+                        href="/login"
+                        className="font-semibold text-blue-600 hover:underline"
+                    >
+                        Login
+                    </Link>
+                </p>
+
             </Card>
         </form>
     )
 }
 
-export default LoginForm
+export default RegisterForm

@@ -7,7 +7,7 @@ export default async function Home(){
     console.log(user)
     return (
         <div>
-            hello ,next Js <Button> clik me</Button>
+            
         </div>
     )
 }

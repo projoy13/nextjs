@@ -181,5 +181,6 @@ export const config = {
         "/news/:path*",
         "/rentals/userRentals/:path*",
         "/Myrentals/:path*",
+        "/UserRentals/:path*"
     ],
 };
