@@ -1,20 +1,15 @@
 import Link from "next/link";
 import {
   Mountain,
-//   Facebook,
-//   Instagram,
-//   Twitter,
   Mail,
   MapPin,
   Phone,
-  ArrowRight,
 } from "lucide-react";
 import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
 
 const Footer = () => {
   return (
     <footer className="bg-[#101d1b] text-white">
-
       {/* TOP FOOTER */}
       <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 md:grid-cols-2 lg:grid-cols-4">
 
@@ -79,21 +74,28 @@ const Footer = () => {
                 Home
               </Link>
             </li>
+
             <li>
               <Link href="/Gears" className="transition hover:text-[#b5e853]">
                 Explore Gears
               </Link>
             </li>
+
             <li>
-              <Link href="/Reviews" className="transition hover:text-[#b5e853]">
+              <Link
+                href="/dashboard/reviews"
+                className="transition hover:text-[#b5e853]"
+              >
                 Customer Reviews
               </Link>
             </li>
+
             <li>
               <Link href="/Myrentals" className="transition hover:text-[#b5e853]">
                 My Rentals
               </Link>
             </li>
+
             <li>
               <Link href="/about" className="transition hover:text-[#b5e853]">
                 About Us
@@ -114,21 +116,28 @@ const Footer = () => {
                 Login
               </Link>
             </li>
+
             <li>
               <Link href="/register" className="transition hover:text-[#b5e853]">
                 Create Account
               </Link>
             </li>
+
             <li>
-              <Link href="/profile" className="transition hover:text-[#b5e853]">
+              <Link
+                href="/dashboard/profile"
+                className="transition hover:text-[#b5e853]"
+              >
                 My Profile
               </Link>
             </li>
+
             <li>
               <Link href="/settings" className="transition hover:text-[#b5e853]">
                 Settings
               </Link>
             </li>
+
             <li>
               <Link href="/billing" className="transition hover:text-[#b5e853]">
                 Billing
@@ -144,7 +153,6 @@ const Footer = () => {
           </h3>
 
           <div className="space-y-5 text-sm text-gray-400">
-
             <div className="flex items-center gap-3">
               <Mail className="shrink-0 text-[#b5e853]" size={19} />
               <a
@@ -164,18 +172,13 @@ const Footer = () => {
               <MapPin className="shrink-0 text-[#b5e853]" size={19} />
               <span>Available Online Worldwide</span>
             </div>
-
           </div>
-
-          
         </div>
-
       </div>
 
       {/* BOTTOM FOOTER */}
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-6 text-center sm:flex-row">
-
           <p className="text-sm text-gray-500">
             © {new Date().getFullYear()} Gear-up. All rights reserved.
           </p>
@@ -195,10 +198,8 @@ const Footer = () => {
               Terms & Conditions
             </Link>
           </div>
-
         </div>
       </div>
-
     </footer>
   );
 };

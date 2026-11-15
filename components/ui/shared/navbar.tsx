@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -33,14 +32,14 @@ import type { NavbarProps } from "@/lib/types";
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Gears", href: "/Gears" },
-  { label: "Reviews", href: "/Reviews" },
-  // { label: "My Rentals", href: "/rentals/userRentals" },
+  { label: "Reviews", href: "/dashboard/reviews" },
+  // { label: "My Rentals", href: "/Myrentals" },
   { label: "About", href: "/about" },
 ];
 
 const userMenuItems = [
   { label: "Dashboard", icon: LayoutDashboard, action: "dashboard" },
-  { label: "Profile", href: "/profile", icon: User },
+  { label: "Profile", href: "/dashboard/profile", icon: User },
   { label: "Settings", href: "/settings", icon: Settings },
   { label: "Billing", href: "/billing", icon: CreditCard },
 ];
