@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -15,9 +16,6 @@ import {
 } from "@/components/ui/card";
 
 import { Button } from "@/components/ui/button";
-// import { Separator } from "@/components/ui/separator";
-// import { Badge } from "@/components/ui/badge";
-
 import {
   ShieldCheck,
   CreditCard,
@@ -48,7 +46,7 @@ export default function Myrentals() {
     const getGear = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_API_URL }/api/gear/${id}`
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/gear/${id}`
         );
 
         const result = await res.json();
@@ -108,7 +106,13 @@ export default function Myrentals() {
         return;
       }
 
-      await makepayment(rental.rentalOrderId);
+      const paymentResult = await makepayment(rental.rentalOrderId);
+
+      if (paymentResult && !paymentResult.success) {
+        alert(paymentResult.message);
+        setPaying(false);
+        return;
+      }
     } catch (error) {
       console.error("Payment error:", error);
       setPaying(false);
@@ -127,7 +131,6 @@ export default function Myrentals() {
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-10">
       <Card className="mx-auto mt-6 w-full max-w-xl overflow-hidden rounded-2xl shadow-xl">
-
         <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white">
           <div className="flex items-center justify-between">
             <Badge className="border-0 bg-white/20 text-white">
@@ -147,7 +150,6 @@ export default function Myrentals() {
         </CardHeader>
 
         <CardContent className="space-y-5 p-6">
-
           <div>
             <label className="mb-2 block text-sm font-medium">
               Start Date
@@ -219,11 +221,9 @@ export default function Myrentals() {
               This gear is currently out of stock.
             </p>
           )}
-
         </CardContent>
 
         <CardFooter className="flex flex-col gap-4 p-6 pt-0">
-
           <Button
             onClick={handlePayment}
             disabled={
@@ -246,7 +246,6 @@ export default function Myrentals() {
             <ShieldCheck className="h-4 w-4 text-green-600" />
             Secure checkout powered by Stripe
           </div>
-
         </CardFooter>
       </Card>
     </div>
