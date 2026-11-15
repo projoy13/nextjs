@@ -21,13 +21,16 @@ const LoginForm = () => {
             ? requestedRedirect
             : ""
 
-    const [state, action, pending] = useActionState(
-        loginAction.bind(null, redirectTo),
-        false
-    )
+   const [state, action, pending] = useActionState(
+    loginAction.bind(null, redirectTo),
+    {
+        success: false,
+        message: "",
+    }
+)
 
     useEffect(() => {
-        if (!state) return
+        if (!state.message) return
 
         if (state.success) {
             toast.success(state.message || "Login successful!")
