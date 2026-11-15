@@ -48,7 +48,7 @@ export default function Myrentals() {
     const getGear = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:5000"}/api/gear/${id}`
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL }/api/gear/${id}`
         );
 
         const result = await res.json();
